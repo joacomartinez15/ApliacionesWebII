@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "id_usuario": 1,
+    "fecha": "2026-04-10",
+    "total": 1350,
+    "direccion": "Córdoba 123",
+    "entregado": true,
+    "productos": [
+      {
+        "id_producto": 1,
+        "cantidad": 1,
+        "precio_unitario": 1200
+      },
+      {
+        "id_producto": 3,
+        "cantidad": 1,
+        "precio_unitario": 150
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "id_usuario": 2,
+    "fecha": "2026-04-12",
+    "total": 900,
+    "direccion": "Av. Siempre Viva 742",
+    "entregado": false,
+    "productos": [
+      {
+        "id_producto": 2,
+        "cantidad": 1,
+        "precio_unitario": 900
+      }
+    ]
+  }
+]

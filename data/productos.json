@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "nombre": "iPhone 13",
+    "desc": "Celular Apple 128GB",
+    "precio": 1200,
+    "imagen": "iphone13.jpg",
+    "stock": 10,
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "Notebook Lenovo",
+    "desc": "Laptop 8GB RAM 256GB SSD",
+    "precio": 900,
+    "imagen": "lenovo.jpg",
+    "stock": 5,
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "Auriculares Bluetooth",
+    "desc": "Inalámbricos con cancelación de ruido",
+    "precio": 150,
+    "imagen": "auriculares.jpg",
+    "stock": 0,
+    "activo": false
+  }
+]
