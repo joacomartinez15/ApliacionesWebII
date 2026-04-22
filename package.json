@@ -1,0 +1,26 @@
+{
+  "name": "apliacioneswebii",
+  "version": "1.0.0",
+  "description": "Proyecto de Aplicaciones Web II",
+  "homepage": "https://github.com/joacomartinez15/ApliacionesWebII#readme",
+  "bugs": {
+    "url": "https://github.com/joacomartinez15/ApliacionesWebII/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joacomartinez15/ApliacionesWebII.git"
+  },
+  "license": "ISC",
+  "author": "Joaquin Martinez",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.20",
+    "nodemon": "^3.1.14"
+  }
+}
