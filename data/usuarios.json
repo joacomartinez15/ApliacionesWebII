@@ -16,11 +16,11 @@
     "activo": true
   },
   {
-    "id": 3,
-    "nombre": "Lucas",
-    "apellido": "Fernandez",
-    "email": "lucas@gmail.com",
-    "contraseña": "pass123",
-    "activo": false
+    "nombre": "Carlos",
+    "apellido": "Lopez",
+    "email": "carlos@gmail.com",
+    "contraseña": "123456",
+    "activo": true,
+    "id": 4
   }
 ]

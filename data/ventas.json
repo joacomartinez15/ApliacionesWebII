@@ -33,5 +33,20 @@
         "precio_unitario": 900
       }
     ]
+  },
+  {
+    "id_usuario": 2,
+    "fecha": "2026-04-20",
+    "total": 900,
+    "direccion": "San Martín 500",
+    "entregado": false,
+    "productos": [
+      {
+        "id_producto": 2,
+        "cantidad": 1,
+        "precio_unitario": 900
+      }
+    ],
+    "id": 3
   }
 ]
