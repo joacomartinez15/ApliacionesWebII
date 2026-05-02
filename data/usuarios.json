@@ -22,5 +22,13 @@
     "contraseña": "123456",
     "activo": true,
     "id": 4
+  },
+  {
+    "nombre": "Joaco",
+    "apellido": "Martinez",
+    "email": "sarasa@gmail.com",
+    "contraseña": "123456",
+    "activo": true,
+    "id": 4
   }
 ]

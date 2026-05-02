@@ -1,18 +1,11 @@
-En esta segunda entrega se desarrolló un servidor utilizando Express.js que permite gestionar información de usuarios, productos y ventas a partir de archivos JSON.
+En esta segunda entrega se desarrolló un servidor utilizando Express.js con arquitectura de rutas separadas y manejo de información mediante archivos JSON.
 
-El proyecto cumple con los requisitos solicitados en la consigna:
-
-* 2 solicitudes GET
-* 2 solicitudes POST
-* 1 solicitud PUT
-* 1 solicitud DELETE
-* Validación de integridad de datos
-* Uso de archivo `.gitignore`
-* Documentación de endpoints
+El proyecto permite gestionar usuarios, productos y ventas a través de una API REST funcional.
 
 La información se almacena en archivos JSON dentro de la carpeta `data/`.
 
 ## Estructura del proyecto
+
 
 AplicacionesWebII/
 │
@@ -28,7 +21,6 @@ AplicacionesWebII/
 ├── package.json
 ├── .gitignore
 └── README.md
-
 
 ## Instalación
 
@@ -52,13 +44,24 @@ node index.js
 
 Servidor disponible en:
 
-```text
+
 http://localhost:3000
-```
 
----
 
-## Endpoints disponibles
+## Base de la API
+
+Todos los endpoints utilizan el prefijo:
+
+/api
+
+Ejemplo:
+
+
+http://localhost:3000/api/productos
+
+
+# Endpoints disponibles
+
 
 ## GET
 
@@ -73,14 +76,22 @@ Devuelve la lista completa de productos almacenados en `productos.json`.
 
 GET /api/ventas
 
-Devuelve las ventas con información completa del usuario y detalle de productos comprados.
 
+Devuelve las ventas con:
+
+* datos del usuario comprador
+* detalle de productos comprados
+* total
+* fecha
+* dirección
+* estado de entrega
 
 ## POST
 
 ### Crear nuevo usuario
 
-POST /api/CrearUsuario
+POST /api/crearUsuario
+
 
 ### Body ejemplo
 
@@ -99,7 +110,8 @@ Agrega un nuevo usuario a `usuarios.json`.
 
 ### Crear nueva venta
 
-POST /api/CrearVenta
+POST /api/crearVenta
+
 
 ### Body ejemplo
 
@@ -120,20 +132,29 @@ POST /api/CrearVenta
 }
 ```
 
-Agrega una nueva venta a `ventas.json`.
+Agrega una nueva venta a `ventas.json` y además:
+
+* valida que el usuario exista
+* valida que los productos existan
+* valida que haya al menos un producto
+* valida que la cantidad sea mayor a 0
+* valida stock disponible
+* descuenta automáticamente el stock del producto vendido
+
+Esto evita ventas inválidas y mejora la integridad del sistema.
 
 
 ## PUT
 
 ### Actualizar producto existente
 
-
-PUT /api/ActualizarProducto/:id
+PUT /api/actualizarProducto/:id
 
 
 ### Ejemplo
 
-PUT /api/productos/1
+
+PUT /api/actualizarProducto/1
 
 ### Body ejemplo
 
@@ -146,30 +167,68 @@ PUT /api/productos/1
 
 Actualiza un producto existente en `productos.json`.
 
+Si el producto no existe, devuelve error 404.
+
 ## DELETE
 
 ### Eliminar usuario
 
+DELETE /api/eliminarUsuario/:id
 
-DELETE /api/EliminarUsuario/:id
 
 ### Ejemplo
 
-DELETE /api/usuarios/3
+DELETE /api/eliminarUsuario/3
 
-El usuario solo puede eliminarse si no posee ventas asociadas.
+Antes de eliminar se valida:
+
+* que el usuario exista
+* que no tenga ventas asociadas
+
+Si el usuario tiene ventas registradas, no puede eliminarse.
 
 Esto garantiza la integridad de los datos.
 
 ---
 
-## Validación importante
+## Validaciones implementadas
 
-Si un usuario tiene ventas registradas, no puede ser eliminado.
+### Usuarios
 
-Ejemplo:
+* validación de existencia antes de eliminar
 
-* Usuario con ventas → no se elimina
-* Usuario sin ventas → se elimina correctamente
+### Productos
 
-Esto evita inconsistencias en la base de datos JSON.
+* validación de existencia antes de actualizar
+* control de stock al vender
+
+### Ventas
+
+* validación de usuario existente
+* validación de productos existentes
+* validación de cantidades válidas
+* validación de stock disponible
+* prevención de ventas vacías
+
+Estas validaciones fueron agregadas como mejora solicitada en la devolución docente.
+
+---
+
+## Pruebas
+
+Todos los endpoints fueron testeados utilizando Postman.
+
+Se verificó:
+
+* lectura correcta de datos
+* escritura real sobre archivos JSON
+* actualización de productos
+* eliminación controlada de usuarios
+* bloqueo de ventas inválidas
+* control de integridad entre estructuras relacionadas
+
+---
+
+## Autor
+
+Joaquín Martínez

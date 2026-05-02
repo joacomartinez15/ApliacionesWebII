@@ -69,11 +69,11 @@
 //El código anterior corresponde a la primer entrega del trabajo practico.
 
 
-const express = require('express');
+import express from 'express';
+import apiRoutes from './routes/api.routes.js';
+
 const app = express();
 const PORT = 3000;
-
-const apiRoutes = require('./routes/api.routes');
 
 app.use(express.json());
 

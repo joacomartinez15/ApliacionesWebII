@@ -3,9 +3,9 @@
     "id": 1,
     "nombre": "iPhone 13",
     "desc": "Celular Apple 128GB",
-    "precio": 1300,
+    "precio": 4.5,
     "imagen": "iphone13.jpg",
-    "stock": 8,
+    "stock": 10,
     "activo": true
   },
   {

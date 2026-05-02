@@ -1,5 +1,6 @@
-const express = require('express');
-const fs = require('fs');
+import express from 'express';
+import fs from 'fs';
+
 const router = express.Router();
 
 function leerJSON(ruta) {
@@ -40,7 +41,9 @@ router.get('/ventas', (req, res) => {
 
         return {
             id: v.id,
-            usuario: usuario ? `${usuario.nombre} ${usuario.apellido}` : 'Desconocido',
+            usuario: usuario
+                ? `${usuario.nombre} ${usuario.apellido}`
+                : 'Desconocido',
             total: v.total,
             fecha: v.fecha,
             direccion: v.direccion,
@@ -53,7 +56,7 @@ router.get('/ventas', (req, res) => {
 });
 
 
-router.post('/CrearUsuario', (req, res) => {
+router.post('/crearUsuario', (req, res) => {
     const usuarios = leerJSON(rutaUsuarios);
     const nuevoUsuario = req.body;
 
@@ -68,14 +71,13 @@ router.post('/CrearUsuario', (req, res) => {
     });
 });
 
-router.post('/CrearVenta', (req, res) => {
+router.post('/crearVenta', (req, res) => {
     const ventas = leerJSON(rutaVentas);
     const usuarios = leerJSON(rutaUsuarios);
     const productos = leerJSON(rutaProductos);
 
     const nuevaVenta = req.body;
 
-    // Validar que exista el usuario
     const usuarioExiste = usuarios.some(
         u => u.id === nuevaVenta.id_usuario
     );
@@ -86,7 +88,6 @@ router.post('/CrearVenta', (req, res) => {
         });
     }
 
-    // Validar que haya al menos un producto
     if (
         !nuevaVenta.productos ||
         !Array.isArray(nuevaVenta.productos) ||
@@ -97,7 +98,6 @@ router.post('/CrearVenta', (req, res) => {
         });
     }
 
-    // Validar productos existentes y stock disponible
     for (const item of nuevaVenta.productos) {
         const producto = productos.find(
             p => p.id === item.id_producto
@@ -122,7 +122,6 @@ router.post('/CrearVenta', (req, res) => {
         }
     }
 
-    // Descontar stock
     nuevaVenta.productos.forEach(item => {
         const producto = productos.find(
             p => p.id === item.id_producto
@@ -131,10 +130,8 @@ router.post('/CrearVenta', (req, res) => {
         producto.stock -= item.cantidad;
     });
 
-    // Generar nuevo ID
     nuevaVenta.id = ventas.length + 1;
 
-    // Guardar venta
     ventas.push(nuevaVenta);
 
     escribirJSON(rutaVentas, ventas);
@@ -147,11 +144,14 @@ router.post('/CrearVenta', (req, res) => {
 });
 
 
-router.put('/ActualizarProducto/:id', (req, res) => {
+
+router.put('/actualizarProducto/:id', (req, res) => {
     const productos = leerJSON(rutaProductos);
     const id = parseInt(req.params.id);
 
-    const index = productos.findIndex(p => p.id === id);
+    const index = productos.findIndex(
+        p => p.id === id
+    );
 
     if (index === -1) {
         return res.status(404).json({
@@ -173,12 +173,24 @@ router.put('/ActualizarProducto/:id', (req, res) => {
 });
 
 
-router.delete('/EliminarUsuario/:id', (req, res) => {
+router.delete('/eliminarUsuario/:id', (req, res) => {
     const usuarios = leerJSON(rutaUsuarios);
     const ventas = leerJSON(rutaVentas);
     const id = parseInt(req.params.id);
 
-    const tieneVentas = ventas.some(v => v.id_usuario === id);
+    const usuarioExiste = usuarios.some(
+        u => u.id === id
+    );
+
+    if (!usuarioExiste) {
+        return res.status(404).json({
+            mensaje: 'El usuario no existe'
+        });
+    }
+
+    const tieneVentas = ventas.some(
+        v => v.id_usuario === id
+    );
 
     if (tieneVentas) {
         return res.status(400).json({
@@ -186,7 +198,9 @@ router.delete('/EliminarUsuario/:id', (req, res) => {
         });
     }
 
-    const nuevosUsuarios = usuarios.filter(u => u.id !== id);
+    const nuevosUsuarios = usuarios.filter(
+        u => u.id !== id
+    );
 
     escribirJSON(rutaUsuarios, nuevosUsuarios);
 
@@ -195,4 +209,4 @@ router.delete('/EliminarUsuario/:id', (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;
