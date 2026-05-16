@@ -20,13 +20,31 @@ const rutaProductos = './data/productos.json';
 const rutaVentas = './data/ventas.json';
 
 router.get('/productos', async (req, res) => {
+
     try {
-        const productos = await leerJSON(rutaProductos);
+
+        let productos =
+            await leerJSON(rutaProductos);
+
+        const categoria =
+            req.query.categoria;
+
+        if (categoria) {
+
+            productos =
+                productos.filter(
+                    p => p.categoria === categoria
+                );
+        }
+
         res.json(productos);
+
     } catch (error) {
+
         res.status(500).json({
             mensaje: 'Error al obtener productos'
         });
+
     }
 });
 

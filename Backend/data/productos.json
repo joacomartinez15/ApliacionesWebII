@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "nombre": "Mouse Logitech G203",
+    "desc": "Mouse gamer RGB 8000 DPI",
+    "precio": 45,
+    "imagen": "mouse-logitech.jpg",
+    "stock": 14,
+    "activo": true,
+    "categoria": "Periféricos"
+  },
+  {
+    "id": 2,
+    "nombre": "Notebook Lenovo",
+    "desc": "Laptop 8GB RAM 256GB SSD",
+    "precio": 900,
+    "imagen": "lenovo.jpg",
+    "stock": 5,
+    "activo": true,
+    "categoria": "Computadoras"
+  },
+  {
+    "id": 3,
+    "nombre": "Teclado Redragon Kumara",
+    "desc": "Teclado mecánico RGB",
+    "precio": 120,
+    "imagen": "kumara.jpg",
+    "stock": 12,
+    "activo": true,
+    "categoria": "Periféricos"
+  },
+  {
+    "id": 4,
+    "nombre": "Auriculares HyperX Cloud",
+    "desc": "Auriculares gamer con micrófono",
+    "precio": 180,
+    "imagen": "hyperx.jpg",
+    "stock": 7,
+    "activo": true,
+    "categoria": "Audio"
+  },
+  {
+    "id": 5,
+    "nombre": "Monitor Samsung 24",
+    "desc": "Monitor Full HD 75Hz",
+    "precio": 320,
+    "imagen": "monitor-samsung.jpg",
+    "stock": 3,
+    "activo": true,
+    "categoria": "Monitores"
+  },
+  {
+    "id": 6,
+    "nombre": "Silla Gamer Cougar",
+    "desc": "Silla ergonómica reclinable",
+    "precio": 450,
+    "imagen": "silla-cougar.jpg",
+    "stock": 2,
+    "activo": true,
+    "categoria": "Gaming"
+  },
+  {
+    "id": 7,
+    "nombre": "Webcam Logitech C920",
+    "desc": "Webcam Full HD para streaming",
+    "precio": 140,
+    "imagen": "webcam.jpg",
+    "stock": 9,
+    "activo": true,
+    "categoria": "Streaming"
+  },
+  {
+    "id": 8,
+    "nombre": "Disco SSD Kingston",
+    "desc": "SSD 1TB SATA",
+    "precio": 110,
+    "imagen": "ssd-kingston.jpg",
+    "stock": 10,
+    "activo": true,
+    "categoria": "Almacenamiento"
+  },
+  {
+    "id": 9,
+    "nombre": "Joystick Xbox",
+    "desc": "Control inalámbrico Xbox Series",
+    "precio": 160,
+    "imagen": "xbox-controller.jpg",
+    "stock": 6,
+    "activo": true,
+    "categoria": "Gaming"
+  },
+  {
+    "id": 10,
+    "nombre": "Placa RTX 4060",
+    "desc": "Placa de video NVIDIA RTX 4060 8GB",
+    "precio": 850,
+    "imagen": "rtx4060.jpg",
+    "stock": 2,
+    "activo": true,
+    "categoria": "Hardware"
+  }
+]

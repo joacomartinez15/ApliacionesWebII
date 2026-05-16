@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Productos</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="./css/style.css">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="container">
+
+      <a class="navbar-brand" href="/">
+        Tienda
+      </a>
+
+      <div class="navbar-nav ms-auto">
+
+        <a class="nav-link" href="/">
+          Inicio
+        </a>
+
+        <a class="nav-link active" href="/productos.html">
+          Productos
+        </a>
+
+        <a class="nav-link" href="/carrito.html">
+          Carrito
+        </a>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+  <main class="container mt-5">
+
+    <div
+      class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3"
+    >
+
+      <h1>Productos</h1>
+
+      <div class="d-flex gap-2">
+
+        <input
+          type="text"
+          id="buscador"
+          class="form-control"
+          placeholder="Buscar producto..."
+        >
+
+        <select
+          id="filtroCategoria"
+          class="form-select"
+        >
+
+          <option value="Todos">
+            Todas las categorías
+          </option>
+
+          <option value="Periféricos">
+            Periféricos
+          </option>
+
+          <option value="Computadoras">
+            Computadoras
+          </option>
+
+          <option value="Audio">
+            Audio
+          </option>
+
+          <option value="Monitores">
+            Monitores
+          </option>
+
+          <option value="Gaming">
+            Gaming
+          </option>
+
+          <option value="Streaming">
+            Streaming
+          </option>
+
+          <option value="Almacenamiento">
+            Almacenamiento
+          </option>
+
+          <option value="Hardware">
+            Hardware
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+    <div class="row" id="productos"></div>
+
+  </main>
+
+  <footer class="bg-dark text-white text-center p-3 mt-5">
+
+    Aplicaciones Web II
+
+  </footer>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <script type="module" src="./js/productos.js"></script>
+
+</body>
+</html>
