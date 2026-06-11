@@ -121,6 +121,48 @@ router.post('/crearUsuario', async (req, res) => {
     }
 });
 
+router.post('/login', async (req, res) => {
+
+    try {
+
+        const usuarios =
+            await leerJSON(rutaUsuarios);
+
+        const {
+            email,
+            contraseña
+        } = req.body;
+
+        const usuario =
+            usuarios.find(u =>
+                u.email === email &&
+                u.contraseña === contraseña &&
+                u.activo === true
+            );
+
+        if (!usuario) {
+
+            return res.status(401).json({
+                mensaje: 'Email o contraseña incorrectos'
+            });
+
+        }
+
+        res.json({
+            mensaje: 'Login exitoso',
+            usuario
+        });
+
+    } catch (error) {
+
+        res.status(500).json({
+            mensaje: 'Error al iniciar sesión'
+        });
+
+    }
+
+});
+
 router.post('/crearVenta', async (req, res) => {
     try {
         const ventas = await leerJSON(rutaVentas);

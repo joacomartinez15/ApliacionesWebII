@@ -138,5 +138,20 @@
       }
     ],
     "id": 8
+  },
+  {
+    "id_usuario": 1,
+    "fecha": "2026-06-05",
+    "total": 120,
+    "direccion": "Av. Siempre Viva 742",
+    "entregado": false,
+    "productos": [
+      {
+        "id_producto": 3,
+        "cantidad": 1,
+        "precio_unitario": 120
+      }
+    ],
+    "id": 9
   }
 ]

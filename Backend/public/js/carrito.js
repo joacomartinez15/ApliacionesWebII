@@ -8,6 +8,12 @@ import {
 }
 from "./storage.js";
 
+import {
+    estaLogueado,
+    obtenerUsuario
+}
+from "./auth.js";
+
 const carritoContainer =
   document.getElementById("carritoContainer");
 
@@ -124,6 +130,19 @@ btnVaciar.addEventListener("click", () => {
 
 btnComprar.addEventListener("click", async () => {
 
+  if (!estaLogueado()) {
+
+    localStorage.setItem(
+        "redirectAfterLogin",
+        "/carrito.html"
+    );
+
+    window.location.href =
+        "/login.html";
+
+    return;
+}
+
   if (carrito.length === 0) {
 
     alert("El carrito está vacío");
@@ -149,7 +168,7 @@ btnComprar.addEventListener("click", async () => {
 
   const venta = {
 
-    id_usuario: 1,
+    id_usuario: obtenerUsuario().id,
 
     fecha:
       new Date()

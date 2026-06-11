@@ -30,5 +30,21 @@
     "contraseña": "123456",
     "activo": true,
     "id": 4
+  },
+  {
+    "nombre": "TEST",
+    "apellido": "CREARUSUARIO",
+    "email": "USUARIONUEVO@gmail.com",
+    "contraseña": "Usuarionuevo",
+    "activo": true,
+    "id": 5
+  },
+  {
+    "nombre": "1",
+    "apellido": "2",
+    "email": "3@q.com",
+    "contraseña": "4",
+    "activo": true,
+    "id": 6
   }
 ]

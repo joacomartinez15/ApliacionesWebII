@@ -27,3 +27,51 @@ export async function crearVenta(venta) {
   return await response.json();
 
 }
+
+export async function login(
+    email,
+    contraseña
+) {
+
+    const response = await fetch(
+        "/api/login",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                email,
+                contraseña
+            })
+        }
+    );
+
+    return await response.json();
+
+}
+
+export async function crearUsuario(
+    usuario
+) {
+
+    const response = await fetch(
+        "/api/crearUsuario",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify(usuario)
+        }
+    );
+
+    return await response.json();
+
+}
