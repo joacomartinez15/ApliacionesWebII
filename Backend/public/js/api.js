@@ -1,54 +1,78 @@
+import {
+    obtenerToken
+}
+from "./auth.js";
+
 const URL = "/api";
 
 export async function obtenerProductos() {
 
-  const response =
-    await fetch(`${URL}/productos`);
+    const response =
+        await fetch(
+            `${URL}/productos`
+        );
 
-  return await response.json();
+    return await response.json();
 
 }
 
 export async function crearVenta(venta) {
 
-  const response = await fetch(
-    `${URL}/crearVenta`,
-    {
-      method: "POST",
+    const response =
+        await fetch(
+            "/api/crearVenta",
+            {
+                method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+                headers: {
+                    "Content-Type":
+                        "application/json",
 
-      body: JSON.stringify(venta)
-    }
-  );
+                    Authorization:
+                        `Bearer ${obtenerToken()}`
+                },
 
-  return await response.json();
+                body:
+                    JSON.stringify(venta)
+            }
+        );
+
+    return await response.json();
 
 }
-
 export async function login(
     email,
     contraseña
 ) {
 
-    const response = await fetch(
-        "/api/login",
-        {
-            method: "POST",
+    const response =
+        await fetch(
 
-            headers: {
-                "Content-Type":
-                    "application/json"
-            },
+            "/api/login",
 
-            body: JSON.stringify({
-                email,
-                contraseña
-            })
-        }
-    );
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        email,
+
+                        contraseña
+
+                    })
+
+            }
+
+        );
 
     return await response.json();
 
@@ -58,19 +82,30 @@ export async function crearUsuario(
     usuario
 ) {
 
-    const response = await fetch(
-        "/api/crearUsuario",
-        {
-            method: "POST",
+    const response =
+        await fetch(
 
-            headers: {
-                "Content-Type":
-                    "application/json"
-            },
+            "/api/crearUsuario",
 
-            body: JSON.stringify(usuario)
-        }
-    );
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify(
+                        usuario
+                    )
+
+            }
+
+        );
 
     return await response.json();
 

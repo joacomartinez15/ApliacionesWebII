@@ -71,6 +71,11 @@
 
 import express from 'express';
 import apiRoutes from './routes/api.routes.js';
+import dotenv from 'dotenv';
+import conectarDB from './config/database.js';
+
+dotenv.config();
+conectarDB();
 
 const app = express();
 const PORT = 3000;

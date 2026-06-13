@@ -1,160 +1,178 @@
 import express from 'express';
-import fs from 'fs/promises';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import {authMiddleware} from '../middlewares/auth.middleware.js';
+import Usuario from '../models/Usuario.js';
+import Producto from '../models/Producto.js';
+import Venta from '../models/Venta.js';
 
 const router = express.Router();
 
-async function leerJSON(ruta) {
-    const data = await fs.readFile(ruta, 'utf-8');
-    return JSON.parse(data);
-}
-
-async function escribirJSON(ruta, datos) {
-    await fs.writeFile(
-        ruta,
-        JSON.stringify(datos, null, 2)
-    );
-}
-
-const rutaUsuarios = './data/usuarios.json';
-const rutaProductos = './data/productos.json';
-const rutaVentas = './data/ventas.json';
-
 router.get('/productos', async (req, res) => {
-
     try {
+        let productos = await Producto.find();
 
-        let productos =
-            await leerJSON(rutaProductos);
-
-        const categoria =
-            req.query.categoria;
+        const categoria = req.query.categoria;
 
         if (categoria) {
-
-            productos =
-                productos.filter(
-                    p => p.categoria === categoria
-                );
+            productos = productos.filter(p => p.categoria === categoria);
         }
-
         res.json(productos);
+    }
 
-    } catch (error) {
-
+    catch (error) {
         res.status(500).json({
             mensaje: 'Error al obtener productos'
         });
 
     }
+
 });
 
-router.get('/ventas', async (req, res) => {
-    try {
-        const ventas = await leerJSON(rutaVentas);
-        const usuarios = await leerJSON(rutaUsuarios);
-        const productos = await leerJSON(rutaProductos);
+router.get( '/ventas', async (req, res) => {
 
-        const ventasCompletas = ventas.map(v => {
-            const usuario = usuarios.find(
-                u => u.id === v.id_usuario
+        try {
+            const ventas =  await Venta.find() .populate('id_usuario').populate( 'productos.id_producto');
+
+            const ventasCompletas =
+                ventas.map(v => ({
+                    id:
+                        v._id,
+                    usuario:
+                        `${v.id_usuario.nombre} ${v.id_usuario.apellido}`,
+                    total:
+                        v.total,
+                    fecha:
+                        v.fecha,
+                    direccion:
+                        v.direccion,
+                    entregado:
+                        v.entregado,
+                    productos:
+                        v.productos.map(
+                            p => ({
+                                nombre:
+                                    p.id_producto.nombre,
+                                cantidad:
+                                    p.cantidad,
+                                precio_unitario:
+                                    p.precio_unitario
+                            })
+                        )
+                }));
+
+            res.json(
+                ventasCompletas
             );
 
-            const productosDetalle = v.productos.map(p => {
-                const prod = productos.find(
-                    pr => pr.id === p.id_producto
-                );
+        }
 
-                return {
-                    nombre: prod
-                        ? prod.nombre
-                        : 'Producto desconocido',
-                    cantidad: p.cantidad,
-                    precio_unitario: p.precio_unitario
-                };
+        catch (error) {
+            res.status(500).json({
+                mensaje: 'Error al obtener ventas'
             });
 
-            return {
-                id: v.id,
-                usuario: usuario
-                    ? `${usuario.nombre} ${usuario.apellido}`
-                    : 'Desconocido',
-                total: v.total,
-                fecha: v.fecha,
-                direccion: v.direccion,
-                entregado: v.entregado,
-                productos: productosDetalle
-            };
-        });
+        }
 
-        res.json(ventasCompletas);
-
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al obtener ventas'
-        });
     }
-});
+);
 
 router.post('/crearUsuario', async (req, res) => {
+
     try {
-        const usuarios = await leerJSON(rutaUsuarios);
         const nuevoUsuario = req.body;
+        const usuarioExiste =
+            await Usuario.findOne({
+                email: nuevoUsuario.email
+            });
 
-        nuevoUsuario.id = usuarios.length + 1;
+        if (usuarioExiste) {
+            return res.status(400).json({
+                mensaje:
+                    'Ya existe un usuario con ese email'
+            });
+        }
 
-        usuarios.push(nuevoUsuario);
+        const hash =
+            await bcrypt.hash(
+                nuevoUsuario.contraseña,
+                10
+            );
 
-        await escribirJSON(
-            rutaUsuarios,
-            usuarios
-        );
+        nuevoUsuario.contraseña = hash;
+
+        const usuarioCreado =
+            await Usuario.create(nuevoUsuario);
 
         res.status(201).json({
-            mensaje: 'Usuario creado correctamente',
-            usuario: nuevoUsuario
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al crear usuario'
+            mensaje:
+                'Usuario creado correctamente',
+            usuario:
+                usuarioCreado
         });
     }
+
+    catch (error) {
+        res.status(500).json({
+            mensaje:
+                'Error al crear usuario'
+        });
+
+    }
+
 });
 
 router.post('/login', async (req, res) => {
 
     try {
-
-        const usuarios =
-            await leerJSON(rutaUsuarios);
-
-        const {
-            email,
-            contraseña
-        } = req.body;
+        const {email,  contraseña} = req.body;
 
         const usuario =
-            usuarios.find(u =>
-                u.email === email &&
-                u.contraseña === contraseña &&
-                u.activo === true
-            );
+            await Usuario.findOne({
+                email
+            });
 
-        if (!usuario) {
-
+        if (!usuario || usuario.activo !== true) {
             return res.status(401).json({
-                mensaje: 'Email o contraseña incorrectos'
+                mensaje:
+                    'Email o contraseña incorrectos'
+            });
+        }
+
+        const passwordCorrecta =
+            await bcrypt.compare( contraseña,  usuario.contraseña );
+
+        if (!passwordCorrecta) {
+            return res.status(401).json({
+                mensaje:
+                    'Email o contraseña incorrectos'
             });
 
         }
 
+        const token =
+            jwt.sign({
+                    id:
+                        usuario._id,
+                    email:
+                        usuario.email
+                },
+
+                process.env.JWT_SECRET,
+
+                {
+                    expiresIn:
+                        '1h'
+                }
+            );
+
         res.json({
-            mensaje: 'Login exitoso',
-            usuario
+            mensaje: 'Login exitoso', usuario, token
         });
 
-    } catch (error) {
+    }
 
+    catch (error) {
         res.status(500).json({
             mensaje: 'Error al iniciar sesión'
         });
@@ -163,148 +181,111 @@ router.post('/login', async (req, res) => {
 
 });
 
-router.post('/crearVenta', async (req, res) => {
-    try {
-        const ventas = await leerJSON(rutaVentas);
-        const usuarios = await leerJSON(rutaUsuarios);
-        const productos = await leerJSON(rutaProductos);
+router.post('/crearVenta', authMiddleware, async (req, res) => {
+            
+        try {
 
-        const nuevaVenta = req.body;
+            const nuevaVenta = req.body;
+            const usuarioExiste = await Usuario.findById( nuevaVenta.id_usuario);
 
-        const usuarioExiste = usuarios.some(
-            u => u.id === nuevaVenta.id_usuario
-        );
+            if (!usuarioExiste) {
+                return res.status(400).json({
+                    mensaje: 'El usuario indicado no existe'
+                });
+            }
 
-        if (!usuarioExiste) {
-            return res.status(400).json({
-                mensaje: 'El usuario indicado no existe'
+            if (!nuevaVenta.productos || !Array.isArray(nuevaVenta.productos) || nuevaVenta.productos.length === 0) {
+                return res.status(400).json({
+                    mensaje:'La venta debe contener al menos un producto'
+                });
+            }
+
+            for ( const item of nuevaVenta.productos) {
+
+                const producto =  await Producto.findById(item.id_producto);
+
+                if (!producto) {
+                    return res.status(400).json({
+                        mensaje: 'Producto inexistente'
+                    });
+                }
+
+                if (producto.stock < item.cantidad) {
+                    return res.status(400).json({
+                        mensaje:`No hay stock suficiente para ${producto.nombre}`
+                    });
+                }
+                producto.stock -= item.cantidad;
+                await producto.save();
+            }
+
+            const ventaCreada = await Venta.create(nuevaVenta);
+
+            res.status(201).json({
+                mensaje:'Venta creada correctamente',
+                venta: ventaCreada
+            });
+
+        }
+        
+
+        catch (error) {
+            console.error(error);
+
+            res.status(500).json({
+                mensaje: 'Error al crear venta'
             });
         }
 
-        if (
-            !nuevaVenta.productos ||
-            !Array.isArray(nuevaVenta.productos) ||
-            nuevaVenta.productos.length === 0
-        ) {
-            return res.status(400).json({
-                mensaje: 'La venta debe contener al menos un producto'
-            });
-        }
-
-        for (const item of nuevaVenta.productos) {
-            const producto = productos.find(
-                p => p.id === item.id_producto
-            );
-
-            if (!producto) {
-                return res.status(400).json({
-                    mensaje: `El producto con ID ${item.id_producto} no existe`
-                });
-            }
-
-            if (item.cantidad <= 0) {
-                return res.status(400).json({
-                    mensaje: `La cantidad del producto ${item.id_producto} debe ser mayor a 0`
-                });
-            }
-
-            if (producto.stock < item.cantidad) {
-                return res.status(400).json({
-                    mensaje: `No hay stock suficiente para ${producto.nombre}`
-                });
-            }
-        }
-
-        nuevaVenta.productos.forEach(item => {
-            const producto = productos.find(
-                p => p.id === item.id_producto
-            );
-
-            producto.stock -= item.cantidad;
-        });
-
-        nuevaVenta.id = ventas.length + 1;
-
-        ventas.push(nuevaVenta);
-
-        await escribirJSON(
-            rutaVentas,
-            ventas
-        );
-
-        await escribirJSON(
-            rutaProductos,
-            productos
-        );
-
-        res.status(201).json({
-            mensaje: 'Venta creada correctamente',
-            venta: nuevaVenta
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            mensaje: 'Error al crear venta'
-        });
     }
-});
+);
 
 router.put('/actualizarProducto/:id', async (req, res) => {
     try {
-        const productos = await leerJSON(rutaProductos);
-        const id = parseInt(req.params.id);
+        const productoActualizado =
+            await Producto.findByIdAndUpdate(req.params.id, req.body,{new: true});
 
-        const index = productos.findIndex(
-            p => p.id === id
-        );
-
-        if (index === -1) {
+        if (!productoActualizado) {
             return res.status(404).json({
                 mensaje: 'Producto no encontrado'
             });
         }
 
-        productos[index] = {
-            ...productos[index],
-            ...req.body
-        };
-
-        await escribirJSON(
-            rutaProductos,
-            productos
-        );
-
         res.json({
-            mensaje: 'Producto actualizado correctamente',
-            producto: productos[index]
+            mensaje: 'Producto actualizado correctamente', producto: productoActualizado
         });
 
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json({
             mensaje: 'Error al actualizar producto'
         });
+
     }
+
 });
 
 router.delete('/eliminarUsuario/:id', async (req, res) => {
-    try {
-        const usuarios = await leerJSON(rutaUsuarios);
-        const ventas = await leerJSON(rutaVentas);
-        const id = parseInt(req.params.id);
 
-        const usuarioExiste = usuarios.some(
-            u => u.id === id
-        );
+    try {
+        const ventas = await leerJSON(rutaVentas);
+
+        const id = req.params.id;
+
+        const usuarioExiste = await Usuario.findById(id);
 
         if (!usuarioExiste) {
             return res.status(404).json({
                 mensaje: 'El usuario no existe'
             });
+
         }
 
-        const tieneVentas = ventas.some(
-            v => v.id_usuario === id
-        );
+        const tieneVentas =
+            ventas.some(
+                v =>
+                    v.id_usuario === id
+            );
 
         if (tieneVentas) {
             return res.status(409).json({
@@ -312,24 +293,21 @@ router.delete('/eliminarUsuario/:id', async (req, res) => {
             });
         }
 
-        const nuevosUsuarios = usuarios.filter(
-            u => u.id !== id
-        );
-
-        await escribirJSON(
-            rutaUsuarios,
-            nuevosUsuarios
+        await Usuario.findByIdAndDelete(
+            id
         );
 
         res.json({
             mensaje: 'Usuario eliminado correctamente'
         });
+    }
 
-    } catch (error) {
+    catch (error) {
         res.status(500).json({
             mensaje: 'Error interno del servidor'
         });
     }
+
 });
 
 export default router;

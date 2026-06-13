@@ -1,44 +1,49 @@
 export function obtenerCarrito() {
 
-  return JSON.parse(
-    localStorage.getItem("carrito")
-  ) || [];
+    return JSON.parse(
+        localStorage.getItem("carrito")
+    ) || [];
 
 }
 
 export function guardarCarrito(carrito) {
 
-  localStorage.setItem(
-    "carrito",
-    JSON.stringify(carrito)
-  );
+    localStorage.setItem(
+        "carrito",
+        JSON.stringify(carrito)
+    );
 
 }
 
 export function agregarAlCarrito(producto) {
 
-  const carrito = obtenerCarrito();
+    const carrito =
+        obtenerCarrito();
 
-  carrito.push(producto);
+    carrito.push(producto);
 
-  guardarCarrito(carrito);
+    guardarCarrito(carrito);
 
 }
 
 export function eliminarProducto(id) {
 
-  let carrito = obtenerCarrito();
+    let carrito =
+        obtenerCarrito();
 
-  carrito = carrito.filter(
-    producto => producto.id !== id
-  );
+    carrito =
+        carrito.filter(
+            producto => producto._id !== id
+        );
 
-  guardarCarrito(carrito);
+    guardarCarrito(carrito);
 
 }
 
 export function vaciarCarrito() {
 
-  localStorage.removeItem("carrito");
+    localStorage.removeItem(
+        "carrito"
+    );
 
 }

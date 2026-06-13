@@ -2,7 +2,8 @@ import { login }
 from "./api.js";
 
 import {
-    guardarUsuario
+    guardarUsuario,
+    guardarToken
 }
 from "./auth.js";
 
@@ -39,6 +40,10 @@ form.addEventListener(
                 respuesta.usuario
             );
 
+            guardarToken(
+                respuesta.token
+            );
+
             const volver =
                 localStorage.getItem(
                     "redirectAfterLogin"
@@ -53,14 +58,18 @@ form.addEventListener(
                 window.location.href =
                     volver;
 
-            } else {
+            }
+
+            else {
 
                 window.location.href =
                     "/";
 
             }
 
-        } else {
+        }
+
+        else {
 
             alert(
                 respuesta.mensaje

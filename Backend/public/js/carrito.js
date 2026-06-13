@@ -1,210 +1,262 @@
-import { crearVenta }
-from "./api.js";
+import { crearVenta } from "./api.js";
 
 import {
-  obtenerCarrito,
-  eliminarProducto,
-  vaciarCarrito
-}
-from "./storage.js";
+    obtenerCarrito,
+    eliminarProducto,
+    vaciarCarrito
+} from "./storage.js";
 
 import {
     estaLogueado,
     obtenerUsuario
-}
-from "./auth.js";
+} from "./auth.js";
 
 const carritoContainer =
-  document.getElementById("carritoContainer");
+    document.getElementById("carritoContainer");
 
 const totalElemento =
-  document.getElementById("total");
+    document.getElementById("total");
 
 const btnVaciar =
-  document.getElementById("vaciarCarrito");
+    document.getElementById("vaciarCarrito");
 
 const btnComprar =
-  document.getElementById("comprarBtn");
+    document.getElementById("comprarBtn");
 
 let carrito = obtenerCarrito();
 
+//------------------------------------------------
+// Renderizar carrito
+//------------------------------------------------
 function renderizarCarrito() {
 
-  carritoContainer.innerHTML = "";
+    carritoContainer.innerHTML = "";
 
-  if (carrito.length === 0) {
+    // eliminar posibles null del localStorage
+    carrito = carrito.filter(producto => producto !== null);
 
-    carritoContainer.innerHTML = `
-      <div class="alert alert-info">
-        El carrito está vacío
-      </div>
-    `;
+    if (carrito.length === 0) {
+
+        carritoContainer.innerHTML = `
+            <div class="alert alert-info">
+                El carrito está vacío
+            </div>
+        `;
+
+        totalElemento.textContent =
+            "Total: $0";
+
+        return;
+    }
+
+    let total = 0;
+
+    carrito.forEach(producto => {
+
+        total += producto.precio;
+
+        carritoContainer.innerHTML += `
+            <div class="card shadow-sm mb-3">
+
+                <div
+                    class="card-body d-flex justify-content-between align-items-center"
+                >
+
+                    <div>
+
+                        <h5>${producto.nombre}</h5>
+
+                        <p>${producto.desc}</p>
+
+                    </div>
+
+                    <div class="text-end">
+
+                        <h5>$${producto.precio}</h5>
+
+                        <button
+                            class="btn btn-danger eliminar-btn"
+                            data-id="${producto._id}"
+                        >
+                            Eliminar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    });
 
     totalElemento.textContent =
-      "Total: $0";
+        `Total: $${total}`;
 
-    return;
-
-  }
-
-  let total = 0;
-
-  carrito.forEach(producto => {
-
-    total += producto.precio;
-
-    carritoContainer.innerHTML += `
-      <div class="card shadow-sm">
-
-        <div
-          class="card-body d-flex justify-content-between align-items-center"
-        >
-
-          <div>
-
-            <h5>${producto.nombre}</h5>
-
-            <p>${producto.desc}</p>
-
-          </div>
-
-          <div class="text-end">
-
-            <h5>$${producto.precio}</h5>
-
-            <button
-              class="btn btn-danger eliminar-btn"
-              data-id="${producto.id}"
-            >
-              Eliminar
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-    `;
-  });
-
-  totalElemento.textContent =
-    `Total: $${total}`;
-
-  eventosEliminar();
-
+    eventosEliminar();
 }
 
+//------------------------------------------------
+// Eliminar producto
+//------------------------------------------------
 function eventosEliminar() {
 
-  const botones =
-    document.querySelectorAll(".eliminar-btn");
+    const botones =
+        document.querySelectorAll(".eliminar-btn");
 
-  botones.forEach(boton => {
+    botones.forEach(boton => {
 
-    boton.addEventListener("click", () => {
+        boton.addEventListener("click", () => {
 
-      const id =
-        Number(boton.dataset.id);
+            const id =
+                boton.dataset.id;
 
-      eliminarProducto(id);
+            eliminarProducto(id);
 
-      carrito = obtenerCarrito();
+            carrito =
+                obtenerCarrito();
 
-      renderizarCarrito();
+            renderizarCarrito();
+
+        });
 
     });
 
-  });
-
 }
 
-btnVaciar.addEventListener("click", () => {
+//------------------------------------------------
+// Vaciar carrito
+//------------------------------------------------
+btnVaciar.addEventListener(
+    "click",
+    () => {
 
-  vaciarCarrito();
+        vaciarCarrito();
 
-  carrito = [];
+        carrito = [];
 
-  renderizarCarrito();
+        renderizarCarrito();
 
-});
+    }
+);
 
-btnComprar.addEventListener("click", async () => {
+//------------------------------------------------
+// Comprar
+//------------------------------------------------
+btnComprar.addEventListener(
+    "click",
+    async () => {
 
-  if (!estaLogueado()) {
+        //------------------------------------------------
+        // verificar login
+        //------------------------------------------------
+        if (!estaLogueado()) {
 
-    localStorage.setItem(
-        "redirectAfterLogin",
-        "/carrito.html"
-    );
+            localStorage.setItem(
+                "redirectAfterLogin",
+                "/carrito.html"
+            );
 
-    window.location.href =
-        "/login.html";
+            window.location.href =
+                "/login.html";
 
-    return;
-}
+            return;
+        }
 
-  if (carrito.length === 0) {
+        //------------------------------------------------
+        // carrito vacío
+        //------------------------------------------------
+        if (carrito.length === 0) {
 
-    alert("El carrito está vacío");
+            alert(
+                "El carrito está vacío"
+            );
 
-    return;
+            return;
+        }
 
-  }
+        //------------------------------------------------
+        // armar productos de la venta
+        //------------------------------------------------
+        const productosVenta =
+            carrito.map(
+                producto => ({
 
-  const productosVenta = carrito.map(
-    producto => ({
-      id_producto: producto.id,
-      cantidad: 1,
-      precio_unitario: producto.precio
-    })
-  );
+                    id_producto:
+                        producto._id,
 
-  const total =
-    carrito.reduce(
-      (acc, producto) =>
-        acc + producto.precio,
-      0
-    );
+                    cantidad:
+                        1,
 
-  const venta = {
+                    precio_unitario:
+                        producto.precio
 
-    id_usuario: obtenerUsuario().id,
+                })
+            );
 
-    fecha:
-      new Date()
-        .toISOString()
-        .split("T")[0],
+        //------------------------------------------------
+        // calcular total
+        //------------------------------------------------
+        const total =
+            carrito.reduce(
+                (acc, producto) =>
+                    acc + producto.precio,
+                0
+            );
 
-    total,
+        //------------------------------------------------
+        // objeto venta
+        //------------------------------------------------
+        const venta = {
 
-    direccion:
-      "Av. Siempre Viva 742",
+            id_usuario:
+                obtenerUsuario()._id,
 
-    entregado: false,
+            fecha:
+                new Date()
+                    .toISOString()
+                    .split("T")[0],
 
-    productos: productosVenta
+            total,
 
-  };
+            direccion:
+                "Av. Siempre Viva 742",
 
-  const respuesta =
-    await crearVenta(venta);
+            entregado:
+                false,
 
-  if (respuesta.mensaje) {
+            productos:
+                productosVenta
 
-    alert("Compra realizada");
+        };
 
-    vaciarCarrito();
+        //------------------------------------------------
+        // enviar venta
+        //------------------------------------------------
+        const respuesta =
+            await crearVenta(venta);
 
-    carrito = [];
+        if (respuesta.venta) {
 
-    renderizarCarrito();
+            alert(
+                "Compra realizada correctamente"
+            );
 
-  } else {
+            vaciarCarrito();
 
-    alert("Error al crear venta");
+            carrito = [];
 
-  }
+            renderizarCarrito();
 
-});
+        }
+        else {
+
+            alert(
+                respuesta.mensaje
+            );
+
+        }
+
+    }
+);
 
 renderizarCarrito();

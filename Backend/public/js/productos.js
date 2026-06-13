@@ -5,158 +5,162 @@ import { agregarAlCarrito }
 from "./storage.js";
 
 const contenedor =
-  document.getElementById("productos");
+    document.getElementById("productos");
 
 const buscador =
-  document.getElementById("buscador");
+    document.getElementById("buscador");
 
 const filtroCategoria =
-  document.getElementById("filtroCategoria");
+    document.getElementById("filtroCategoria");
 
 let productos = [];
 
 async function cargarProductos() {
 
-  productos = await obtenerProductos();
+    productos = await obtenerProductos();
 
-  productos = productos.filter(
-    producto => producto.activo
-  );
+    productos = productos.filter(
+        producto => producto.activo
+    );
 
-  renderizarProductos(productos);
+    renderizarProductos(productos);
 
 }
 
 function renderizarProductos(lista) {
 
-  contenedor.innerHTML = "";
+    contenedor.innerHTML = "";
 
-  lista.forEach(producto => {
+    lista.forEach(producto => {
 
-    contenedor.innerHTML += `
-      <div class="col-md-4 mb-4">
+        contenedor.innerHTML += `
+        <div class="col-md-4 mb-4">
 
-        <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm">
 
-          <img
-            src="https://placehold.co/600x400"
-            class="card-img-top"
-            alt="${producto.nombre}"
-          >
+                <img
+                    src="./img/${producto.imagen}"
+                    class="card-img-top"
+                    alt="${producto.nombre}"
+                    style="height:220px; object-fit:cover"
+                >
 
-          <div class="card-body d-flex flex-column">
+                <div class="card-body d-flex flex-column">
 
-            <h5 class="card-title">
-              ${producto.nombre}
-            </h5>
+                    <h5 class="card-title">
+                        ${producto.nombre}
+                    </h5>
 
-            <p class="badge bg-secondary w-auto">
-              ${producto.categoria}
-            </p>
+                    <p class="badge bg-secondary w-auto">
+                        ${producto.categoria}
+                    </p>
 
-            <p class="card-text">
-              ${producto.desc}
-            </p>
+                    <p class="card-text">
+                        ${producto.desc}
+                    </p>
 
-            <p>
-              Stock: ${producto.stock}
-            </p>
+                    <p>
+                        Stock: ${producto.stock}
+                    </p>
 
-            <h4 class="mt-auto">
-              $${producto.precio}
-            </h4>
+                    <h4 class="mt-auto">
+                        $${producto.precio}
+                    </h4>
 
-            <button
-              class="btn btn-primary mt-3"
-              data-id="${producto.id}"
-            >
-              Agregar al carrito
-            </button>
+                    <button
+                        class="btn btn-primary mt-3"
+                        data-id="${producto._id}"
+                    >
+                        Agregar al carrito
+                    </button>
 
-          </div>
+                </div>
+
+            </div>
 
         </div>
+        `;
 
-      </div>
-    `;
-  });
+    });
 
-  agregarEventos();
+    agregarEventos();
 
 }
 
 function agregarEventos() {
 
-  const botones =
-    document.querySelectorAll(".btn-primary");
+    const botones =
+        document.querySelectorAll(".btn-primary");
 
-  botones.forEach(boton => {
+    botones.forEach(boton => {
 
-    boton.addEventListener("click", () => {
+        boton.addEventListener("click", () => {
 
-      const id =
-        Number(boton.dataset.id);
+            const id =
+                boton.dataset.id;
 
-      const producto =
-        productos.find(p => p.id === id);
+            const producto =
+                productos.find(
+                    p => p._id === id
+                );
 
-      agregarAlCarrito(producto);
+            agregarAlCarrito(producto);
 
-      alert("Producto agregado");
+            alert("Producto agregado");
+
+        });
 
     });
-
-  });
 
 }
 
 function aplicarFiltros() {
 
-  const texto =
-    buscador.value.toLowerCase();
+    const texto =
+        buscador.value.toLowerCase();
 
-  const categoria =
-    filtroCategoria.value;
+    const categoria =
+        filtroCategoria.value;
 
-  const filtrados =
-    productos.filter(producto => {
+    const filtrados =
+        productos.filter(producto => {
 
-      const coincideTexto =
-        producto.nombre
-          .toLowerCase()
-          .includes(texto);
+            const coincideTexto =
+                producto.nombre
+                    .toLowerCase()
+                    .includes(texto);
 
-      const coincideCategoria =
-        categoria === "Todos"
-        ||
-        producto.categoria === categoria;
+            const coincideCategoria =
+                categoria === "Todos"
+                ||
+                producto.categoria === categoria;
 
-      return (
-        coincideTexto &&
-        coincideCategoria
-      );
+            return (
+                coincideTexto &&
+                coincideCategoria
+            );
 
-    });
+        });
 
-  renderizarProductos(filtrados);
+    renderizarProductos(filtrados);
 
 }
 
 if (buscador) {
 
-  buscador.addEventListener(
-    "input",
-    aplicarFiltros
-  );
+    buscador.addEventListener(
+        "input",
+        aplicarFiltros
+    );
 
 }
 
 if (filtroCategoria) {
 
-  filtroCategoria.addEventListener(
-    "change",
-    aplicarFiltros
-  );
+    filtroCategoria.addEventListener(
+        "change",
+        aplicarFiltros
+    );
 
 }
 

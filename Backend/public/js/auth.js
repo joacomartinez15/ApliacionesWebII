@@ -10,14 +10,35 @@ export function guardarUsuario(usuario) {
 export function obtenerUsuario() {
 
     return JSON.parse(
-        localStorage.getItem("usuarioLogueado")
+        localStorage.getItem(
+            "usuarioLogueado"
+        )
+    );
+
+}
+
+export function guardarToken(token) {
+
+    localStorage.setItem(
+        "token",
+        token
+    );
+
+}
+
+export function obtenerToken() {
+
+    return localStorage.getItem(
+        "token"
     );
 
 }
 
 export function estaLogueado() {
 
-    return obtenerUsuario() !== null;
+    return obtenerUsuario() !== null
+        &&
+        obtenerToken() !== null;
 
 }
 
@@ -25,6 +46,10 @@ export function logout() {
 
     localStorage.removeItem(
         "usuarioLogueado"
+    );
+
+    localStorage.removeItem(
+        "token"
     );
 
 }
