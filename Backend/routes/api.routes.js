@@ -243,7 +243,7 @@ router.post('/crearVenta', authMiddleware, async (req, res) => {
 router.put('/actualizarProducto/:id', async (req, res) => {
     try {
         const productoActualizado =
-            await Producto.findByIdAndUpdate(req.params.id, req.body,{new: true});
+            await Producto.findByIdAndUpdate(req.params.id, req.body,{returnDocument: 'after'});
 
         if (!productoActualizado) {
             return res.status(404).json({
@@ -268,29 +268,31 @@ router.put('/actualizarProducto/:id', async (req, res) => {
 router.delete('/eliminarUsuario/:id', async (req, res) => {
 
     try {
-        const ventas = await leerJSON(rutaVentas);
 
         const id = req.params.id;
 
-        const usuarioExiste = await Usuario.findById(id);
+        const usuarioExiste = await Usuario.findById(
+            id
+        );
 
         if (!usuarioExiste) {
+
             return res.status(404).json({
                 mensaje: 'El usuario no existe'
             });
 
         }
 
-        const tieneVentas =
-            ventas.some(
-                v =>
-                    v.id_usuario === id
-            );
+        const tieneVentas = await Venta.exists({
+            id_usuario: id
+        });
 
         if (tieneVentas) {
+
             return res.status(409).json({
                 mensaje: 'No se puede eliminar el usuario porque tiene ventas asociadas'
             });
+
         }
 
         await Usuario.findByIdAndDelete(
@@ -300,12 +302,17 @@ router.delete('/eliminarUsuario/:id', async (req, res) => {
         res.json({
             mensaje: 'Usuario eliminado correctamente'
         });
+
     }
 
     catch (error) {
+
+        console.error(error);
+
         res.status(500).json({
             mensaje: 'Error interno del servidor'
         });
+
     }
 
 });
